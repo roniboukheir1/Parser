@@ -77,8 +77,6 @@ def main():
         print("Could not parse sentence.")
         return
     
-    # print("Found parse(s):" + str(len(trees)))
-    
     for tree in trees:
         
         tree.pretty_print()

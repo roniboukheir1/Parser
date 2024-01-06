@@ -17,17 +17,37 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> N V
-S -> N V Det N
-S -> N V Det N P N
-S -> N V P Det Adj N Conj N V
-S -> Det N V Det Adj N
-S -> N V P N
-S -> N Adv V Det N Conj N V P Det N Adv
-S -> N V Adv Conj V Det N
+S -> NP VP
+S -> NP VP PP
+S -> NP VP NP PP
+S -> NP VP NP Conj NP VP
+S -> NP VP NP
+S -> NP Adv VP NP VP
+S -> NP VP Conj NP VP
+S -> NP VP Conj VP NP
+S -> NP VP Det Adj NP NP Conj VP NP Det Adj N
 
-S -> N V Det Adj N P N Conj V N P Det Adj N
-S -> N V Det Adj Adj Adj N P Det N P Det N
+NP -> Det N PP
+NP -> N PP
+NP -> Det NP
+NP -> NP Conj NP
+NP -> Det Adj N
+NP -> Adj N
+NP -> Det Adj Adj Adj N
+NP -> N P
+NP -> N
+
+
+PP -> P NP
+PP -> P Det N
+PP -> P Det N Adv
+
+VP -> V
+VP -> V NP
+VP -> V NP PP
+VP -> Adv V NP
+VP -> V Adv
+VP -> V PP
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
@@ -48,7 +68,7 @@ def main():
     s = preprocess(s)
 
     try:
-        trees = list(parser.parse(s))  
+        trees = (list(parser.parse(s)))
     
     except ValueError as e:
         print(e)
@@ -63,6 +83,7 @@ def main():
         
         tree.pretty_print() 
         print("Noun Phrase Chunks")
+
     for np in np_chunk(tree):
         print(" ".join(np.flatten()))
 
@@ -80,18 +101,17 @@ def preprocess(sentence):
 
 def np_chunk(tree):
     
+    print("We are checking the np_chunks of the following tree")
+    tree.pretty_print()
     trees = []
-    for t in tree.subtrees(lambda x: x.label() == 'N'):
+    for t in tree.subtrees(lambda x: x.label() == 'NP'):
 
-        satisfies = True
-        for s in t.subtrees():
-            print("EHLO") 
-            if s.label() == 'N':
-                satisfies = False
-        
-        if satisfies:
+        if not any( tree for tree in t.subtrees(lambda y: y != t) if tree.label() == 'NP'):
             trees.append(t)
-            print("APPENDED")
+    
+    if not trees:
+        print("Could not find any noun phrase chunks.")
+    
     return trees            
         
 

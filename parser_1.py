@@ -77,15 +77,15 @@ def main():
         print("Could not parse sentence.")
         return
     
-    print("Found parse(s):" + str(len(trees)))
+    # print("Found parse(s):" + str(len(trees)))
     
     for tree in trees:
         
-        tree.pretty_print() 
+        tree.pretty_print()
         print("Noun Phrase Chunks")
 
-    for np in np_chunk(tree):
-        print(" ".join(np.flatten()))
+        for np in np_chunk(tree):
+            print(" ".join(np.flatten()))
 
 
 def preprocess(sentence):
@@ -101,8 +101,6 @@ def preprocess(sentence):
 
 def np_chunk(tree):
     
-    print("We are checking the np_chunks of the following tree")
-    tree.pretty_print()
     trees = []
     for t in tree.subtrees(lambda x: x.label() == 'NP'):
 
